@@ -51,9 +51,10 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         icmpheader=recPacket[20:28]
         type, code, checksum, pid, seq = struct.unpack('bbHHh', icmpheader)
 
+        #OPTION 2
         if type==8 or ID!=pid:#wrong type
         	return 'Wrong Type.'
-        
+
         send_time,  = struct.unpack('d', recPacket[28:])# 보낸 시간 패킷에 가서 가져온다. 
         
         #OPTION 1
@@ -131,7 +132,7 @@ def ping(host, timeout=1):
 			delay=doOnePing(dest, timeout)
 			print(delay)
 			time.sleep(1)
-	except KeyboardInterrupt:
+	except KeyboardInterrupt:#종료버튼
 		if count != 0:
 			print ("***",host," Ping Result ***")
 			print ('{:.1f}% Packet Loss'.format(100.0 - rttCnt * 100.0 / count))
