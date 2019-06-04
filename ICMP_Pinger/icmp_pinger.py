@@ -8,7 +8,7 @@ import binascii
 
 ICMP_ECHO_REQUEST = 8
 
-#checksum 계산 함수
+# checksum 계산 함수
 def checksum(string): 
 	csum = 0
 	countTo = (len(string) // 2) * 2  
@@ -35,11 +35,11 @@ def checksum(string):
 def receiveOnePing(mySocket, ID, timeout, destAddr):
     global rttMin, rttMax, rttSum, rttCnt
 
-    timeLeft = timeout# timeout 예외
+    timeLeft = timeout # timeout 예외
     while 1:
-        startedSelect = time.time()#현재 
+        startedSelect = time.time() # 현재 
         whatReady = select.select([mySocket], [], [], timeLeft)
-        howLongInSelect = (time.time() - startedSelect)# 현재 시간에서 핑을 받는데 까지 걸리는 시간
+        howLongInSelect = (time.time() - startedSelect) # 현재 시간에서 핑을 받는데 까지 걸리는 시간
         if whatReady[0] == []: # Timeout
             return "Request timed out."
 
@@ -55,7 +55,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         if type==8 or ID!=pid:#wrong type
         	return 'Wrong Type.'
 
-        send_time,  = struct.unpack('d', recPacket[28:])# 보낸 시간 패킷에 가서 가져온다. 
+        send_time,  = struct.unpack('d', recPacket[28:]) # 보낸 시간 패킷에 가서 가져온다. 
         
         #OPTION 1
         rtt = (timeReceived - send_time) * 1000
@@ -105,9 +105,9 @@ def doOnePing(destAddr, timeout):
 	icmp = getprotobyname("icmp")
 	# SOCK_RAW is a powerful socket type. For more details:   http://sock-raw.org/papers/sock_raw
 
-	mySocket = socket(AF_INET, SOCK_RAW, icmp)
+	mySocket = socket(AF_INET, SOCK_RAW, icmp) # 소켓 생성
 	
-	myID = os.getpid() & 0xFFFF  # Return the current process i
+	myID = os.getpid() & 0xFFFF  # Return the current process i, 프로세스 아이디 확인
 	sendOnePing(mySocket, destAddr, myID)
 	delay = receiveOnePing(mySocket, myID, timeout, destAddr)
 	
@@ -119,8 +119,8 @@ def ping(host, timeout=1):
 	rttMin = float('+inf')
 	rttMax = float('-inf')
 	rttSum = 0
-	rttCnt = 0#전역변수초기화
-	count = 0
+	rttCnt = 0 # 전역변수 초기화, 이들은 rtt의 결과를 위해 사용된다.
+	count = 0 # 손실 개수 측정
 	#timeout=1 means: If one second goes by without a reply from the server,
 	#the client assumes that either the client's ping or the server's pong is lost
 	dest=gethostbyname(host)
@@ -129,10 +129,10 @@ def ping(host, timeout=1):
 	try:
 		while 1:
 			count += 1
-			delay=doOnePing(dest, timeout)
-			print(delay)
-			time.sleep(1)
-	except KeyboardInterrupt:#종료버튼
+			delay=doOnePing(dest, timeout) # rtt 값을 받음
+			print(delay) 
+			time.sleep(1) # 1ms 멈춤
+	except KeyboardInterrupt:# 종료 버튼
 		if count != 0:
 			print ("***",host," Ping Result ***")
 			print ('{:.1f}% Packet Loss'.format(100.0 - rttCnt * 100.0 / count))
